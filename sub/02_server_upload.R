@@ -69,35 +69,34 @@ DF = reactive({
 
 # --- Output Plots --- #
 
-SIF_model = NULL
-output$PKNplot <- renderPlot({
+SIF_model <- reactive({
   
   req(input$upload_SIF)
   
-  SIF_model <<- readSIF(input$upload_SIF$datapath)
-  plotModel(model = SIF_model)
-  
-  if(!is.null(input$upload_MIDAS)){
-    cno <<- CNOlist(input$upload_MIDAS$datapath)
-    plotModel(model = SIF_model,CNOlist = cno)
-  }
+  readSIF(input$upload_SIF$datapath)
 })
 
-cno <- NULL
+output$PKNplot <- renderPlot({
+  
+  req(SIF_model())
+  
+  if(is.null(CNO())) plotModel(model = SIF_model())
+  else plotModel(model = SIF_model(),CNOlist = CNO())
+  
+})
+
+CNO <- reactive({
+  req(input$upload_MIDAS)
+  
+  CNOlist(input$upload_MIDAS$datapath)
+  
+})
+
+
 output$MIDASplot <- renderPlot({
   
-  if(!is.null(input$upload_MIDAS)){
-      
-    # if (!is.null(input$upload_DF)) { # (Still have to find a way to integrate MIDAS without writing a csv file)
-    #   MIDAS_DF <<- DFtoMIDAS(input$upload_DF$datapath)
-    #   M2C <<- readMIDAS(MIDAS_DF)
-    #   cno <<- CNOlist(M2C)
-    # } else {
-      cno <<- CNOlist(input$upload_MIDAS$datapath)
-    # }
-    
-    plotCNOlist(cno)
-  }
+  req(CNO())
+  plotCNOlist(CNO())
   
 })
 

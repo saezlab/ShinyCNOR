@@ -1,35 +1,53 @@
+# ---  CellNOptR reactive data--- # 
+
+preprocessed_model_CellNOptR <- reactive({
+  
+  req(SIF_model(),CNO())
+  
+  prep_model <- preprocessing(model = SIF_model(), data = CNO(),cutNONC = T,
+                              compression = input$compression_CellNOptR,
+                              expansion = input$expansion_CellNOptR )
+  return(prep_model)
+  
+})
+
+
 # --- Output CellNOptR --- # 
 
-preprocessed_model_CellNOptR <- NULL
-res_CellNOptR <- NULL
+# stores the optimisation results
+res_CellNOptR <- reactive({
+  req(input$run_CellNOptR,preprocessed_model_CellNOptR(),CNO())
+  
+  res <- gaBinaryT1(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), verbose=FALSE)
+  
+})
 
 # --- PlotModel CellNOptR --- #
 
-output$PlotModel_CellNOptR <- renderPlot({
+output$PlotPrepModel_CellNOptR <-  renderPlot({
   
-  if (input$run_CellNOptR) {
-    
-    preprocessed_model_CellNOptR <<- preprocessing(model = SIF_model, data = cno,cutNONC = T,
-                                                   compression = input$compression_CellNOptR,
-                                                   expansion = input$expansion_CellNOptR )
-    res <<- gaBinaryT1(CNOlist = cno, model = preprocessed_model_CellNOptR, verbose=FALSE)
-    plotModel(model = preprocessed_model_CellNOptR,CNOlist = cno, bString = res_CellNOptR$bString)
-  }
+  req(preprocessed_model_CellNOptR())
+  
+  plotModel(model = preprocessed_model_CellNOptR(),CNOlist = CNO())
+  
+})
+
+
+output$PlotOptModel_CellNOptR <- renderPlot({
+  req(res_CellNOptR())
+  
+  plotModel(model = preprocessed_model_CellNOptR(), CNOlist = CNO(), bString = res_CellNOptR()$bString)
+  
 })
 
 # --- PlotFit CellNOptR --- #
 
 output$PlotFit_CellNOptR <- renderPlot({
+  
+  req(res_CellNOptR()) 
+    
+  cutAndPlot(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), bStrings = list(res_CellNOptR()$bString))
 
-  if (input$run_CellNOptR) {
-  
-    preprocessed_model_CellNOptR <<- preprocessing(model = SIF_model, data = cno,cutNONC = T,
-                                       compression = input$compression_CellNOptR,
-                                       expansion = input$expansion_CellNOptR )
-    res_CellNOptR <<- gaBinaryT1(CNOlist = cno, model = preprocessed_model_CellNOptR, verbose=FALSE)
-    cutAndPlot(CNOlist = cno, model = preprocessed_model_CellNOptR, bStrings = list(res_CellNOptR$bString))
-  
-  }
 })
 
 # --- End of the script --- #

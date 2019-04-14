@@ -14,7 +14,8 @@ tabPanel(
 
     mainPanel(
       helpText("PlotModel - CellNOptR"),
-      plotOutput("PlotModel_CellNOptR",width = "100%"),
+      plotOutput("PlotPrepModel_CellNOptR",width = "100%"),
+      plotOutput("PlotOptModel_CellNOptR",width = "100%"),
       hr(),
       helpText("PlotFit - CellNOptR"),
       plotOutput("PlotFit_CellNOptR",width = "100%")

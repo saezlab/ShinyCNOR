@@ -13,10 +13,10 @@ ui = function(request) {
       source("sub/02_ui_upload.R")$value,
       source("sub/03_ui_CellNOptR.R")$value,
       source("sub/04_ui_CNORprob.R")$value,
-      source("sub/05_ui_CNORode.R")$value
-      ,source("sub/ui_help.R")$value
-      ,source("sub/ui_contact.R")$value
-      ,hr()
+      source("sub/05_ui_CNORode.R")$value,
+      source("sub/ui_help.R")$value,
+      source("sub/ui_contact.R")$value,
+      hr()
       ) # close navbarPage
     ) # close fluidPage
 }
