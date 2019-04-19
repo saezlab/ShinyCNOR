@@ -1,5 +1,6 @@
 # ---  CellNOptR reactive data--- # 
 
+
 preprocessed_model_CellNOptR <- reactive({
   
   req(SIF_model(),CNO())
@@ -13,14 +14,25 @@ preprocessed_model_CellNOptR <- reactive({
 
 
 # --- Output CellNOptR --- # 
+# res_CellNOptR: stores the model, data and optim results in a synchronised way.
+# OptimalFit and optimNetwork plots are dependent on this data
+res_CellNOptR = reactiveValues(pkn_model = NULL, 
+                               cno_data = NULL,
+                               optim_results = NULL)
 
-# stores the optimisation results
-res_CellNOptR <- reactive({
+
+# run optimisation upon button pressed:
+observeEvent(input$run_CellNOptR,{
+  print("res_CellNOptR triggered")
   req(input$run_CellNOptR,preprocessed_model_CellNOptR(),CNO())
   
   res <- gaBinaryT1(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), verbose=FALSE)
   
-})
+  res_CellNOptR$pkn_model = preprocessed_model_CellNOptR()
+  res_CellNOptR$cno_data = CNO()
+  res_CellNOptR$optim_results = res
+  
+},ignoreInit = TRUE)
 
 # --- PlotModel CellNOptR --- #
 
@@ -32,21 +44,27 @@ output$PlotPrepModel_CellNOptR <-  renderPlot({
   
 })
 
-
+# triggered when res_CellNOptR gets initialised/updated
 output$PlotOptModel_CellNOptR <- renderPlot({
-  req(res_CellNOptR())
   
-  plotModel(model = preprocessed_model_CellNOptR(), CNOlist = CNO(), bString = res_CellNOptR()$bString)
+  if(is.null(res_CellNOptR$optim_results)) return(NULL)
+  
+  plotModel(model = res_CellNOptR$pkn_model,
+            CNOlist = res_CellNOptR$cno_data,
+            bString = res_CellNOptR$optim_results$bString)
   
 })
 
 # --- PlotFit CellNOptR --- #
 
+# triggered when res_CellNOptR gets initialised/updated
 output$PlotFit_CellNOptR <- renderPlot({
   
-  req(res_CellNOptR()) 
+  if(is.null(res_CellNOptR$optim_results)) return(NULL)
     
-  cutAndPlot(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), bStrings = list(res_CellNOptR()$bString))
+  cutAndPlot(CNOlist = res_CellNOptR$cno_data,
+             model = res_CellNOptR$pkn_model,
+             bStrings = list(res_CellNOptR$optim_results$bString))
 
 })
 

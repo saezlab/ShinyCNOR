@@ -76,9 +76,6 @@ output$PKNplot <- renderPlot({
   
 })
 
-
-
-
 output$MIDASplot <- renderPlot({
   
   req(CNO())
@@ -101,7 +98,7 @@ output$SIF_data_table = DT::renderDataTable({
 
 # tick-box control of show SIF_data_table
 observeEvent(input$disp_SIF, {
-  print(input$disp_SIF)
+  
   if (input$disp_SIF) shinyjs::show("SIF_data_table") else shinyjs::hide("SIF_data_table")
 })
 
