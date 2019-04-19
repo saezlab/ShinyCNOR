@@ -1,5 +1,6 @@
 # SERVER
 server = function(input, output, session) {
+  devel_data = TRUE
   source("sub/02_server_upload.R", local=T)
   source("sub/03_server_CellNOptR.R", local=T)
   source("sub/04_server_CNORprob.R", local=T)
