@@ -26,7 +26,17 @@ observeEvent(input$run_CellNOptR,{
   print("res_CellNOptR triggered")
   req(input$run_CellNOptR,preprocessed_model_CellNOptR(),CNO())
   
-  res <- gaBinaryT1(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), verbose=FALSE)
+  res <- gaBinaryT1(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), verbose=FALSE,
+                    sizeFac = input$sizeFac_input,
+                    NAFac = input$NAFac_input,
+                    popSize = input$popSize_input,
+                    pMutation = input$pMutation_input,
+                    maxTime = input$maxTime_input,
+                    maxGens = input$maxGens_input,
+                    stallGenMax = input$stallGenMax_input,
+                    selPress = input$selPress_input,
+                    elitism = input$elitism_input,
+                    relTol = input$relTol_input)
   
   res_CellNOptR$pkn_model = preprocessed_model_CellNOptR()
   res_CellNOptR$cno_data = CNO()
@@ -61,11 +71,11 @@ output$PlotOptModel_CellNOptR <- renderPlot({
 output$PlotFit_CellNOptR <- renderPlot({
   
   if(is.null(res_CellNOptR$optim_results)) return(NULL)
-    
+  
   cutAndPlot(CNOlist = res_CellNOptR$cno_data,
              model = res_CellNOptR$pkn_model,
              bStrings = list(res_CellNOptR$optim_results$bString))
-
+  
 })
 
 # --- End of the script --- #
