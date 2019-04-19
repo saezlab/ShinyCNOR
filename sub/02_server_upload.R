@@ -19,41 +19,19 @@ observeEvent({
 # --- Upload data --- #
 
 SIF_raw = reactive({
-  # if (input$take_example_data == F) {
-  shinyjs::enable("upload_SIF")
-  # shinyjs::enable("select_organism")
-  
-  req(input$upload_SIF)
-  
-  read.table(input$upload_SIF$datapath,header = F)
-  # } else {
-  #   shinyjs::disable("upload_expr")
-  #   shinyjs::disable("select_organism")
-  #   example_data 
-  # }
-})
-
-MIDAS = reactive({
-  # if (input$take_example_data == F) {
-  shinyjs::enable("upload_MIDAS")
-  # shinyjs::enable("select_organism")
-  inFile = input$upload_MIDAS
-  if (is.null(inFile)){
-    return(NULL)
+  # here data is imported as text
+  if(devel_data){
+    warning("development version")
+    read.table("data/examples/ToyPKNMMB.sif",header = F) 
+  }else{
+    req(input$upload_SIF)
+    read.table(input$upload_SIF$datapath, header = F)
   }
-  read_csv(inFile$datapath)
-  # } else {
-  #   shinyjs::disable("upload_expr")
-  #   shinyjs::disable("select_organism")
-  #   example_data 
-  # }
 })
 
-
-# --- Output Plots --- #
 
 SIF_model <- reactive({
-  
+  # here data is converted to model object (PKN)
   if(devel_data){
     warning("development version")
     readSIF("data/examples/ToyPKNMMB.sif") 
@@ -61,9 +39,33 @@ SIF_model <- reactive({
     req(input$upload_SIF)
     readSIF(input$upload_SIF$datapath)
   }
+})
 
+MIDAS_raw = reactive({
+  # here data is imported as text
+  if(devel_data){
+    warning("development version")
+    read_csv("data/examples/ToyDataMMB.csv") 
+  }else{
+    req(input$upload_MIDAS)
+    read_csv(input$upload_MIDAS$datapath)
+  }
+})
+
+CNO <- reactive({
+  # here data is converted to CNOlist object
+  if(devel_data){
+    warning("development version")
+    CNOlist("data/examples/ToyDataMMB.csv") 
+  }else{
+    req(input$upload_MIDAS)
+    CNOlist(input$upload_MIDAS$datapath)
+  }
   
 })
+
+# --- Output Plots --- #
+
 
 output$PKNplot <- renderPlot({
   
@@ -74,17 +76,7 @@ output$PKNplot <- renderPlot({
   
 })
 
-CNO <- reactive({
-  
-  if(devel_data){
-    warning("development version")
-    CNOlist("data/examples/ToyDataMMB.csv") 
-  }else{
-    req(input$upload_MIDAS)
-    CNOlist(input$upload_MIDAS$datapath)
-  }
-  
-})
+
 
 
 output$MIDASplot <- renderPlot({
@@ -96,6 +88,7 @@ output$MIDASplot <- renderPlot({
 
 # --- Output data table --- #
 
+# -- SIF_data_table
 output$SIF_data_table = DT::renderDataTable({
   
   req(SIF_raw())
@@ -108,15 +101,24 @@ output$SIF_data_table = DT::renderDataTable({
 
 # tick-box control of show SIF_data_table
 observeEvent(input$disp_SIF, {
-  if (input$disp_SIF) show("SIF_data_table") else hide("SIF_data_table")
+  print(input$disp_SIF)
+  if (input$disp_SIF) shinyjs::show("SIF_data_table") else shinyjs::hide("SIF_data_table")
 })
 
-output$MIDAS = DT::renderDataTable({
-  if (!is.null(MIDAS())& input$disp_MIDAS) {
-    DT::datatable(MIDAS(), option = list(scrollX = TRUE, autoWidth=T), 
-                  filter = "top", selection = list(target = "none")) %>%
-      formatSignif(which(map_lgl(MIDAS(), is.numeric)))
-  }
+
+# -- MIDAS_data_table
+output$MIDAS_data_table = DT::renderDataTable({
+  req(MIDAS_raw())
+  
+  DT::datatable(MIDAS_raw(), option = list(scrollX = TRUE, autoWidth=T), 
+                filter = "top", selection = list(target = "none")) %>%
+    formatSignif(which(map_lgl(MIDAS_raw(), is.numeric)))
+  
+})
+
+# tick-box control of show MIDAS_data_table
+observeEvent(input$disp_MIDAS, {
+  if (input$disp_MIDAS) shinyjs::show("MIDAS_data_table") else shinyjs::hide("MIDAS_data_table")
 })
 
 # --- End of the script --- #

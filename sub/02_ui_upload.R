@@ -21,7 +21,7 @@ tabPanel(
       plotOutput("MIDASplot",width = "100%"),
       hr(),
       helpText("Data table: MIDAS dataset"),
-      DT::dataTableOutput("MIDAS")))
+      DT::dataTableOutput("MIDAS_data_table")))
   
   #tags$iframe(style="height:400pm; width:100%; scrolling=yes",src="logo_saezlab.pdf")))
   
