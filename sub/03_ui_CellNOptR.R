@@ -13,11 +13,12 @@ tabPanel(
       actionButton("run_CellNOptR", label="Run CellNOptR")),
 
     mainPanel(
-      helpText("PlotModel - CellNOptR"),
+      helpText("Initial network"),
       plotOutput("PlotPrepModel_CellNOptR",width = "100%"),
+      helpText("Optimised network"),
       plotOutput("PlotOptModel_CellNOptR",width = "100%"),
       hr(),
-      helpText("PlotFit - CellNOptR"),
+      helpText("Data vs. Model prediction"),
       plotOutput("PlotFit_CellNOptR",width = "100%")
       )),
   hr()
