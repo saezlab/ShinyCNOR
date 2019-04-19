@@ -18,15 +18,14 @@ observeEvent({
 
 # --- Upload data --- #
 
-SIF = reactive({
+SIF_raw = reactive({
   # if (input$take_example_data == F) {
   shinyjs::enable("upload_SIF")
   # shinyjs::enable("select_organism")
-  inFile = input$upload_SIF
-  if (is.null(inFile)){
-    return(NULL)
-  }
-  read.table(inFile$datapath,header = F)
+  
+  req(input$upload_SIF)
+  
+  read.table(input$upload_SIF$datapath,header = F)
   # } else {
   #   shinyjs::disable("upload_expr")
   #   shinyjs::disable("select_organism")
@@ -50,30 +49,20 @@ MIDAS = reactive({
   # }
 })
 
-DF = reactive({
-  # if (input$take_example_data == F) {
-  shinyjs::enable("upload_MIDAS")
-  # shinyjs::enable("select_organism")
-  inFile = input$upload_MIDAS
-  if (is.null(inFile)){
-    return(NULL)
-  }
-  read_csv(inFile$datapath)
-  # } else {
-  #   shinyjs::disable("upload_expr")
-  #   shinyjs::disable("select_organism")
-  #   example_data 
-  # }
-  
-})
 
 # --- Output Plots --- #
 
 SIF_model <- reactive({
   
-  req(input$upload_SIF)
+  if(devel_data){
+    warning("development version")
+    readSIF("data/examples/ToyPKNMMB.sif") 
+  }else{
+    req(input$upload_SIF)
+    readSIF(input$upload_SIF$datapath)
+  }
+
   
-  readSIF(input$upload_SIF$datapath)
 })
 
 output$PKNplot <- renderPlot({
@@ -86,9 +75,14 @@ output$PKNplot <- renderPlot({
 })
 
 CNO <- reactive({
-  req(input$upload_MIDAS)
   
-  CNOlist(input$upload_MIDAS$datapath)
+  if(devel_data){
+    warning("development version")
+    CNOlist("data/examples/ToyDataMMB.csv") 
+  }else{
+    req(input$upload_MIDAS)
+    CNOlist(input$upload_MIDAS$datapath)
+  }
   
 })
 
@@ -102,12 +96,19 @@ output$MIDASplot <- renderPlot({
 
 # --- Output data table --- #
 
-output$SIF = DT::renderDataTable({
-  if (!is.null(SIF()) & input$disp_SIF) {
-    DT::datatable(SIF(), option = list(scrollX = TRUE, autoWidth=T), 
-                  filter = "top", selection = list(target = "none")) %>%
-      formatSignif(which(map_lgl(SIF(), is.numeric)))
-  }
+output$SIF_data_table = DT::renderDataTable({
+  
+  req(SIF_raw())
+  
+  DT::datatable(SIF_raw(), option = list(scrollX = TRUE, autoWidth=T), 
+                filter = "top", selection = list(target = "none")) %>%
+    formatSignif(which(map_lgl(SIF_raw(), is.numeric)))
+  
+})
+
+# tick-box control of show SIF_data_table
+observeEvent(input$disp_SIF, {
+  if (input$disp_SIF) show("SIF_data_table") else hide("SIF_data_table")
 })
 
 output$MIDAS = DT::renderDataTable({
