@@ -15,7 +15,7 @@ tabPanel(
       plotOutput("PKNplot",width = "100%"),
       hr(),
       helpText("Data table: model structure"),
-      DT::dataTableOutput("SIF"),
+      DT::dataTableOutput("SIF_data_table"),
       hr(),
       helpText("Plot measurements"),
       plotOutput("MIDASplot",width = "100%"),
