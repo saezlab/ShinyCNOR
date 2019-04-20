@@ -42,7 +42,10 @@ output$PlotModel_CNORprob <- renderPlot({
     ProbForce <- F # Default (most-relaxed) setting
     
     # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
-    ModDatppProb <- preprocessing_Prob(cno, SIF_model, expansion=FALSE,
+    # ModDatppProb <- preprocessing_Prob(cno, SIF_model, expansion=FALSE,
+    #                                    compression=ProbCompression, cutNONC=ProbCutNONC,
+    #                                    verbose=FALSE)
+    ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
                                        compression=ProbCompression, cutNONC=ProbCutNONC,
                                        verbose=FALSE)
     optmodel <- ModDatppProb$cutModel
@@ -112,7 +115,10 @@ output$PlotFit_CNORprob <- renderPlot({
     
     
     # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
-    ModDatppProb <- preprocessing_Prob(cno, SIF_model, expansion=FALSE,
+    # ModDatppProb <- preprocessing_Prob(cno, SIF_model, expansion=FALSE,
+    #                                    compression=ProbCompression, cutNONC=ProbCutNONC,
+    #                                    verbose=FALSE)
+    ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
                                        compression=ProbCompression, cutNONC=ProbCutNONC,
                                        verbose=FALSE)
     optmodel <- ModDatppProb$cutModel
