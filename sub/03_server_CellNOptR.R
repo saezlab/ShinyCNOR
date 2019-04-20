@@ -23,8 +23,8 @@ res_CellNOptR = reactiveValues(pkn_model = NULL,
 
 # run optimisation upon button pressed:
 observeEvent(input$run_CellNOptR,{
-  print("res_CellNOptR triggered")
-  req(input$run_CellNOptR,preprocessed_model_CellNOptR(),CNO())
+  
+  req(preprocessed_model_CellNOptR(),CNO())
   
   res <- gaBinaryT1(CNOlist = CNO(), model = preprocessed_model_CellNOptR(), verbose=FALSE,
                     sizeFac = input$sizeFac_input,
