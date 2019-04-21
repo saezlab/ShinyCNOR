@@ -25,7 +25,7 @@ options(shiny.maxRequestSize=30*1024^2)
 # --- load example data ---  # 
 SIF_toy = readSIF("data/examples/ToyPKNMMB.sif") 
 MIDAS_toy = CNOlist("data/examples/ToyDataMMB.csv") 
-devel_data = TRUE  # load these example data by default
+devel_data = FALSE  # load these example data by default
 
 # --- functions --- #
 DFtoMIDAS <- function(DF=NULL) {

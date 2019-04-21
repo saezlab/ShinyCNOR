@@ -59,6 +59,7 @@ CNO <- reactive({
     CNOlist("data/examples/ToyDataMMB.csv") 
   }else{
     req(input$upload_MIDAS)
+    
     CNOlist(input$upload_MIDAS$datapath)
   }
   

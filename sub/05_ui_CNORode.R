@@ -24,7 +24,8 @@ tabPanel(
                   min = 0, max = 10, value = c(0,1),step = 0.01),
       helpText("Termination conditions:"),
       numericInput("maxTime_ode_input", "Max. optim. time [s]", 15, min = 0, max = 120),
-      numericInput("maxEval_ode_input", "Max. obj.func evaluation", 5000, min = 0, max = 1e5)
+      numericInput("maxEval_ode_input", "Max. obj.func evaluation", 5000, min = 0, max = 1e5),
+      downloadButton("export_CNORode", label="Download script")
       ),
     
     mainPanel(

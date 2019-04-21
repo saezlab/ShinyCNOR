@@ -4,7 +4,7 @@
 preprocessed_model_CNORode <- reactive({
   
   req(SIF_model(),CNO())
-  print(input$maxTime_input)
+  
   prep_model <- preprocessing(model = SIF_model(), data = CNO(),cutNONC = T,
                               compression = input$compression_CNORode,
                               expansion = FALSE)
@@ -72,4 +72,58 @@ output$PlotFit_CNORode <- renderPlot({
 })
 
 # --- End of the script --- #
+output$export_CNORode <- downloadHandler(
+  filename = function() {
+    paste('train_custom_model_', Sys.Date(), '.R', sep='')
+  },
+  content = function(con) {
+    
+    
+    sink(con)
+    cat("# install the following packages as required: \n")
+    cat("library(CNORode) \n")
+    cat("library(MEIGOR) \n")
+    cat("library(CellNOptR) \n\n")
+    cat("# adjust path as required: \n")
+    cat("model <- readSIF('",input$upload_SIF$name,"')","\n")
+    cat("cnolist <- CNOlist('",input$upload_MIDAS$name,"')","\n\n")
+    
+    cat("# preprocess the prior knowledge network: \n")
+    cat("prep_model <- preprocessing(model = model, data = cnolist, cutNONC = T,
+        compression = ",input$compression_CNORode, ", expansion = FALSE),","\n")
 
+    cat("plotModel(model = prep_model,CNOlist = cnolist)","\n")
+    
+    cat("# Setup the optimisation bounds for the parameters: \n")
+    cat("LB_n = ",input$n_range_slider[[1]],"\n")
+    cat("UB_n = ",input$n_range_slider[[2]],"\n")
+    cat("LB_k = ",input$k_range_slider[[1]],"\n")
+    cat("UB_k = ",input$k_range_slider[[2]],"\n")
+    cat("LB_tau = ",input$tau_range_slider[[1]],"\n")
+    cat("UB_tau = ",input$tau_range_slider[[2]],"\n\n")
+    
+    cat("initial_pars <- createLBodeContPars(prep_model, 
+                                     LB_n = LB_n, UB_n = UB_n,
+                                     LB_k = LB_k, UB_k = UB_k,
+                                     LB_tau = LB_tau, UB_tau = UB_tau,
+                                     random = TRUE)","\n")
+    
+    cat("# Call the optimisation algorithm \n")
+    cat("opt_pars <- parEstimationLBodeSSm(cnolist = cnolist,
+                                      model = prep_model,
+                                      ode_parameters = initial_pars,
+                                      maxeval = ",input$maxEval_ode_input,",",
+                                      "maxtime = ",input$maxTime_ode_input,",",
+                                      "transfer_function = ",input$transferFunction_input,")","\n\n")
+    
+    cat("# Plot the fitted model's predictions and data: \n")
+    cat("plotLBodeFitness(cnolist,
+                     model,
+                     ode_parameters=opt_pars,
+                     transfer_function = ",input$transferFunction_input,")","\n")
+    
+    sink()
+    
+    
+  },contentType = "text"
+)
