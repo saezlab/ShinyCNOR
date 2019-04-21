@@ -10,7 +10,10 @@ output$PlotFit_CNORode <- renderPlot({
   if (input$run_CNORode) {
     
     # Pre-processing CNORode (set gate expansion to False by default[?])
-    preprocessed_model_CNORode <<- preprocessing(model = SIF_model, data = cno,cutNONC = T,
+    # preprocessed_model_CNORode <<- preprocessing(model = SIF_model, data = cno,cutNONC = T,
+    #                                              compression = input$compression_CNORode,
+    #                                              expansion = F )
+    preprocessed_model_CNORode <<- preprocessing(model = SIF_model(), data = CNO(),cutNONC = T,
                                                  compression = input$compression_CNORode,
                                                  expansion = F )
     
@@ -24,11 +27,14 @@ output$PlotFit_CNORode <- renderPlot({
     paramsGA$transfer_function = 2
     
     # Optimisation
-    opt_pars=parEstimationLBode(cno,preprocessed_model_CNORode,ode_parameters=initial_pars,
+    # opt_pars=parEstimationLBode(cno,preprocessed_model_CNORode,ode_parameters=initial_pars,
+    #                             paramsGA=paramsGA)
+    opt_pars=parEstimationLBode(CNO(),preprocessed_model_CNORode,ode_parameters=initial_pars,
                                 paramsGA=paramsGA)
     
     # Plotting
-    plotLBodeFitness(cno, preprocessed_model_CNORode,ode_parameters=opt_pars)
+    # plotLBodeFitness(cno, preprocessed_model_CNORode,ode_parameters=opt_pars)
+    plotLBodeFitness(CNO(), preprocessed_model_CNORode,ode_parameters=opt_pars)
     
   }
 })
