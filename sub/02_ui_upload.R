@@ -3,9 +3,13 @@ tabPanel(
   sidebarLayout(
     sidebarPanel(
       
+      switchInput(inputId = "take_example_data", label = "Take example data",
+                  onLabel = "Yes", offLabel = "No", value=TRUE),
+      
       fileInput("upload_SIF", label="Upload SIF file"),
       fileInput("upload_MIDAS", label="Upload MIDAS file"),
-      fileInput("upload_DF", label="Or upload data table file (for MIDAS-format conversion) - not working yet..."),
+      fileInput("upload_DF", label="Or upload data table file (for MIDAS-format conversion) "),
+      
       
       checkboxInput("disp_SIF", "Show SIF data table", FALSE),
       checkboxInput("disp_MIDAS", "Show MIDAS data table", FALSE)),

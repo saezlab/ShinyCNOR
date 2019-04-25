@@ -1,17 +1,17 @@
 # --- Load libraries --- #
 library(shiny)
-# library(shinyWidgets)
+library(shinyWidgets)
 library(tidyverse)
 # library(viper)
-library(ggrepel)
+# library(ggrepel)
 library(DT)
 #library(furrr)
-library(pheatmap)
+# library(pheatmap)
 library(shinyjs)
 #library(ggExtra)
-library(tidygraph)
-library(ggraph)
-library(broom)
+# library(tidygraph)
+# library(ggraph)
+# library(broom)
 library(CellNOptR)
 library(CNORprob)
 library(Rsolnp) 
@@ -83,11 +83,11 @@ DFtoMIDAS <- function(DF=NULL) {
     FinalFileName <- DF
   }
   
-  write.csv(MIDASmat,paste0(FinalFileName,"_MIDAS.csv"),row.names = F,quote = F)
+  # write.csv(MIDASmat,paste0(FinalFileName,"_MIDAS.csv"),row.names = F,quote = F)
   
-  print(paste0("The MIDAS file was written and saved as '",paste0(FinalFileName,"_MIDAS.csv'")))
+  # print(paste0("The MIDAS file was written and saved as '",paste0(FinalFileName,"_MIDAS.csv'")))
   
-  # return(MIDASmat)
+  return(MIDASmat)
 }
 
 

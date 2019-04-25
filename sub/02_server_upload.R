@@ -1,26 +1,28 @@
 # --- Button trigger control --- #(to be checked - doesn't work for now...)
 # if a file is uploaded, the calculation button in enabled 
 
+
+
 observeEvent({
   input$upload_SIF
   input$upload_MIDAS
   input$take_example_data}, {
     toggleState("run_CellNOptR",
-                # input$take_example_data == T | (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
-                (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
+                input$take_example_data == T | (!is.null(input$upload_SIF) & (!is.null(input$upload_MIDAS) | !is.null(input$upload_DF))) )
+                # (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
     toggleState("run_CNORprob",
-                # input$take_example_data == T | (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
-                (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
+                input$take_example_data == T | (!is.null(input$upload_SIF) & (!is.null(input$upload_MIDAS) | !is.null(input$upload_DF))) )
+                # (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
     toggleState("run_CNORode",
-                # input$take_example_data == T | (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
-                (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
+                input$take_example_data == T | (!is.null(input$upload_SIF) & (!is.null(input$upload_MIDAS) | !is.null(input$upload_DF))) )
+                # (!is.null(input$upload_SIF) & !is.null(input$upload_MIDAS)) )
   })
 
 # --- Upload data --- #
 
 SIF_raw = reactive({
   # here data is imported as text
-  if(devel_data){
+  if(input$take_example_data){
     warning("development version")
     read.table("data/examples/ToyPKNMMB.sif",header = F) 
   }else{
@@ -32,7 +34,7 @@ SIF_raw = reactive({
 
 SIF_model <- reactive({
   # here data is converted to model object (PKN)
-  if(devel_data){
+  if(input$take_example_data){
     warning("development version")
     readSIF("data/examples/ToyPKNMMB.sif") 
   }else{
@@ -43,24 +45,45 @@ SIF_model <- reactive({
 
 MIDAS_raw = reactive({
   # here data is imported as text
-  if(devel_data){
+  if(input$take_example_data){
     warning("development version")
     read_csv("data/examples/ToyDataMMB.csv") 
   }else{
-    req(input$upload_MIDAS)
-    read_csv(input$upload_MIDAS$datapath)
+    if (!is.null(input$upload_MIDAS)) {
+      req(input$upload_MIDAS)
+      read_csv(input$upload_MIDAS$datapath)
+    } else if (!is.null(input$upload_DF)) {
+      req(input$upload_DF)
+      DFtoMIDAS(input$upload_DF$datapath)
+    }
   }
 })
 
+# CustomisedDF_raw = reactive({
+#   # here data is imported as text
+#     req(input$upload_DF)
+#     DFtoMIDAS(input$upload_DF$datapath)
+# })
+
+
+
+
 CNO <- reactive({
   # here data is converted to CNOlist object
-  if(devel_data){
+  if(input$take_example_data){
     warning("development version")
     CNOlist("data/examples/ToyDataMMB.csv") 
   }else{
-    req(input$upload_MIDAS)
-    
-    CNOlist(input$upload_MIDAS$datapath)
+    if (!is.null(input$upload_MIDAS)) {
+      req(input$upload_MIDAS)
+      CNOlist(input$upload_MIDAS$datapath)
+    } else if (!is.null(input$upload_DF)) {
+      req(input$upload_DF)
+      Temp <- DFtoMIDAS(input$upload_DF$datapath)
+      TempFileName <- tempfile("midas",fileext = ".csv")
+      write.csv(Temp,TempFileName)
+      CNOlist(TempFileName)
+    }
   }
   
 })
