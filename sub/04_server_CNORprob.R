@@ -2,40 +2,78 @@
 
 optmodel_CNORprob <- reactive({
   
-  if (input$run_CNORprob) {
+  # ---------------------------- # 
+  
+  # if (input$run_CNORprob) {
+  #   
+  #   # Assign CNORprob-specitifc parameters for pre-processing step
+  #   ProbCompression <- input$compression_CNORprob;
+  #   ProbCutNONC <- T;
+  #   
+  #   # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
+  #   ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
+  #                                      compression=ProbCompression, cutNONC=ProbCutNONC,
+  #                                      verbose=FALSE)
+  #   optmodel <- ModDatppProb$cutModel
+  #   #  optCNOlist <- ModDatppProb$data
+  #   
+  #   return(optmodel)
+  # }
+  
+  # ---------------------------- # 
     
-    # Assign CNORprob-specitifc parameters for pre-processing step
-    ProbCompression <- input$compression_CNORprob;
-    ProbCutNONC <- T;
+  req(SIF_model(),CNO())
+  
+  # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
+  ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), 
+                                     compression=input$compression_CNORprob, 
+                                     expansion=F,
+                                     cutNONC=T,
+                                     verbose=FALSE)
+  optmodel <- ModDatppProb$cutModel
+  #  optCNOlist <- ModDatppProb$data
     
-    # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
-    ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
-                                       compression=ProbCompression, cutNONC=ProbCutNONC,
-                                       verbose=FALSE)
-    optmodel <- ModDatppProb$cutModel
-    #  optCNOlist <- ModDatppProb$data
-    
-    return(optmodel)
-  }
+  return(optmodel)
+  # }
+  
+  
 })
 
 optCNOlist_CNORprob <- reactive({
   
-  if (input$run_CNORprob) {
-    
-    # Assign CNORprob-specitifc parameters for pre-processing step
-    ProbCompression <- input$compression_CNORprob;
-    ProbCutNONC <- T;
-
-    # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
-    ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
-                                       compression=ProbCompression, cutNONC=ProbCutNONC,
-                                       verbose=FALSE)
-    # optmodel <- ModDatppProb$cutModel
-    optCNOlist <- ModDatppProb$data
-    
-    return(optCNOlist)
-  }
+  # ---------------------------- # 
+  
+  # if (input$run_CNORprob) {
+  #   
+  #   # Assign CNORprob-specitifc parameters for pre-processing step
+  #   ProbCompression <- input$compression_CNORprob;
+  #   ProbCutNONC <- T;
+  # 
+  #   # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
+  #   ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), expansion=FALSE,
+  #                                      compression=ProbCompression, cutNONC=ProbCutNONC,
+  #                                      verbose=FALSE)
+  #   # optmodel <- ModDatppProb$cutModel
+  #   optCNOlist <- ModDatppProb$data
+  #   
+  #   return(optCNOlist)
+  # }
+  
+  # ---------------------------- # 
+  
+  req(SIF_model(),CNO())
+  
+  # Run CNORprob-specific pre-processing (expansion=FALSE by default and report)
+  ModDatppProb <- preprocessing_Prob(CNO(), SIF_model(), 
+                                     compression=input$compression_CNORprob, 
+                                     expansion=F,
+                                     cutNONC=T,
+                                     verbose=FALSE)
+  # optmodel <- ModDatppProb$cutModel
+  optCNOlist <- ModDatppProb$data
+  
+  return(optCNOlist)
+  
 })
     
 
@@ -50,9 +88,9 @@ res_CNORprob <- reactive({
     ProbForce <- F # Default (most-relaxed) setting
     
     # Assign optimisation and parameter settings
-    optRound_optim    <- 3        # rounds of optimisation
-    L1Reg             <- 1e-4     # assign weight for L1-regularisation
-    MaxTime           <- 180      # time for each round of optimisation [seconds]
+    optRound_optim    <- input$nrRound_input        # rounds of optimisation
+    L1Reg             <- input$sizeFac_input     # assign weight for L1-regularisation
+    MaxTime           <- input$maxTime_input      # time for each round of optimisation [seconds]
     HLbound           <- 0.5      # cut-off for high and low weights
     SSthresh          <- 2e-16    # cut-off for states' difference at steady-state
     printCost         <- 0        # print or not print intermediate fitting cost [0,1]
@@ -68,7 +106,10 @@ res_CNORprob <- reactive({
     trace             <- 1        # print objfunc every iter / default = 1
     
     # Post-optimisation analysis
-    Analyses          <- c(T,T,T,T) # [F,T] edge knockout, node knockout, sensitivity analysis
+    Analyses          <- c(input$edgeKO_input, # edge knockout
+                           input$nodeKO_input, # node knockout
+                           input$LPSA_input, # sensitivity analysis
+                           input$BS_input) # bootstrapping analysis
     optRound_analysis <- 1        # rounds of optmisation in each analysis
     LPSA_Increments   <- 2        # number of increments in LPSA analysis
     BS_Type           <- 1        # Type of Bootstrapping [1=resample with replacement from residual; 2=resampling from mean & variant]
@@ -89,13 +130,48 @@ res_CNORprob <- reactive({
     estim$maxtime <- MaxTime; estim$printCost <- printCost
     estim$optimOptions <- c(rho,outer.iter,inner.iter,delta,tol,trace)
     res <<- CNORprob_optimise(estim,optRound_optim,SaveOptResults)
-  }
+  
+  estim_Result   <<- list() # Initialise global variable of results
+  estim$ProbCompression <- input$compression_CNORprob
+  estim$ProbCutNONC <- T
+  estim$ProbExpandOR <- input$expansion_CNORprob
+  estim$optRound_analysis <- optRound_analysis
+  estim_original <- estim
+  estim_based <- estim_original; if (Analyses[1]) { estim_Result  <- CNORprob_edgeKO(optmodel_CNORprob(),optCNOlist_CNORprob(),estim_based,res) }
+  estim_based <- estim_original; if (Analyses[2]) { estim_Result  <- CNORprob_nodeKO(optmodel_CNORprob(),optCNOlist_CNORprob(),estim_based,res) }
+  estim_based <- estim_original; if (Analyses[3]) { estim_Result  <- CNORprob_LPSA(estim_based,res,HLbound,LPSA_Increments,Force=F) }
+  estim_based <- estim_original; if (Analyses[4]) { estim_Result  <- CNORprob_BS(optmodel_CNORprob(),optCNOlist_CNORprob(),estim_based,res,BS_Type,BS_Round) }
+  
+  save(estim_Result,file="Results/CNORprob_PostHocResults.Rdata")
   
   return(res)
+  
+  }
+  
 })
 
 
 # --- PlotModel CNORprob --- #
+
+output$PlotPrepModel_CNORprob <- renderPlot({
+  
+  req(optmodel_CNORprob(),optCNOlist_CNORprob)
+  
+  plotModel(model = optmodel_CNORprob(),CNOlist = optCNOlist_CNORprob())
+  
+})
+
+# triggered when res_CellNOptR gets initialised/updated
+# output$PlotOptModel_CellNOptR <- renderPlot({
+#   
+#   if(is.null(res_CellNOptR$optim_results)) return(NULL)
+#   
+#   plotModel(model = res_CellNOptR$pkn_model,
+#             CNOlist = res_CellNOptR$cno_data,
+#             bString = res_CellNOptR$optim_results$bString)
+#   
+# })
+
 
 output$PlotModel_CNORprob <- renderPlot({
   
