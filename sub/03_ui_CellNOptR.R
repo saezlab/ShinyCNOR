@@ -29,6 +29,7 @@ tabPanel(
     mainPanel(
       helpText("Initial network"),
       plotOutput("PlotPrepModel_CellNOptR",width = "100%"),
+      hr(),
       helpText("Optimised network"),
       plotOutput("PlotOptModel_CellNOptR",width = "100%"),
       hr(),

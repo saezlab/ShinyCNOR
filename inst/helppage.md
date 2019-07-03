@@ -1,4 +1,4 @@
-## Help page of the FUNKI application.
+## Help page of the ShinyCNOR application.
 
 Dear User,
 
@@ -12,7 +12,7 @@ in an R session. **Please note that this feature will be enabled as soon as this
 
 ### Upload Data
 
-Please upload the input files for the CellNOptR packages i.e. the prior knowledge network (PKN) in the simple interaction file (SIF) format and the experimental data in the Minimum Information for DataAnalysis in Systems Biology (MIDAS) format. Users can also supply a tidy-style dataframe to convert it into the file in MIDAS format (still not working on R-Shiny... to be integrated...)
+Please upload the input files for the CellNOptR packages i.e. the prior knowledge network (PKN) in the simple interaction file (SIF) format and the experimental data in the Minimum Information for DataAnalysis in Systems Biology (MIDAS) format. Users can also supply a tidy-style dataframe to convert it into the file in MIDAS format.
 
 #### SIF format description
 * Contains 3 columns without a header. Each column is separated by tabs.
@@ -38,8 +38,9 @@ Please upload the input files for the CellNOptR packages i.e. the prior knowledg
 
 ### CNORprob
 
-* Remark1
-* Remark2
+* Given that the consideration of Boolean gate assignment in CNORprob is different compared to the other CellNOpt packages, the assignment of OR-gate expansion will replace the  additive effect of edge combination which is assigned by default.
+
+* Users can also run post-hoc analyses including edge/node knock-out, (local) parameter sensitivity analysis and bootstrapping analysis by ticking the corresponding options and click on the “Run Post-hoc analysis” button. The results from the analysis will then be saved in the ‘Results’ folder on the current working directory in the R-session.
 
 ---
 
