@@ -29,13 +29,6 @@ Please upload the input files for the CellNOptR packages i.e. the prior knowledg
 
 ---
 
-### CellNOptR
-
-* Remark1
-* Remark2
-
----
-
 ### CNORprob
 
 * Given that the consideration of Boolean gate assignment in CNORprob is different compared to the other CellNOpt packages, the assignment of OR-gate expansion will replace the  additive effect of edge combination which is assigned by default.
@@ -43,11 +36,3 @@ Please upload the input files for the CellNOptR packages i.e. the prior knowledg
 * Users can also run post-hoc analyses including edge/node knock-out, (local) parameter sensitivity analysis and bootstrapping analysis by ticking the corresponding options and click on the “Run Post-hoc analysis” button. The results from the analysis will then be saved in the ‘Results’ folder on the current working directory in the R-session.
 
 ---
-
-### CNORode
-
-* Remark1
-* Remark2
-
----
-
