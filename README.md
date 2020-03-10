@@ -12,5 +12,3 @@ ShinyCNOR is still under development, and the following approaches are implement
 
 #### CNORode
 <a href="https://github.com/saezlab/CNORode/" target="_blank">CNORode</a> for logic-based ODE formalism. It is an ODE add-on to CellNOptR. It is based on the method of (Wittmann et al BMC Sys Bio 2009), also implemented in the tool Odefy (Krusiek et al BMC Bioinf 2010).
-
-#### More tools?
