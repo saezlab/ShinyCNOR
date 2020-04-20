@@ -8,7 +8,7 @@ ui = function(request) {
     #theme = shinythemes::shinytheme("spacelab"),
     navbarPage(
       id = "menu", title="ShinyCNOR",collapsible=T,
-      footer = column(12, align="center", "ShinyCNOR-App 2019 (version: 0.1)"),
+      footer = column(12, align="center", "ShinyCNOR-App 2020 (version: 1.0)"),
       source("sub/01_ui_welcome.R")$value,
       source("sub/02_ui_upload.R")$value,
       source("sub/03_ui_CellNOptR.R")$value,
